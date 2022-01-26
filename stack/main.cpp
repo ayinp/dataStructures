@@ -11,14 +11,139 @@ template <typename T>
 class Stack{
 public:
     T* values;
-    int size;
+    int sizeFeild;
 public:
     void push(T value);
     T pop();
+    //pop off top
     T top();
-    int findSize();
+    //returns top value without removing it
+    int size();
+    //size
     bool isEmpty();
+    //checks if empty
 };
+
+template<typename T>
+void Stack<T>::push(T value)
+{
+
+}
+
+template<typename T>
+T Stack<T>::pop()
+{
+
+}
+
+template<typename T>
+T Stack<T>::top()
+{
+
+}
+
+template<typename T>
+int Stack<T>::size()
+{
+
+}
+
+template<typename T>
+bool Stack<T>::isEmpty()
+{
+
+}
+
+
+TEST(TestStack, Push1TestSizeAndValues) {
+    Stack<int> s;
+    s.push(1);
+    ASSERT_EQ(s.size(), 1);
+    ASSERT_EQ(s.pop(), 1);
+}
+
+TEST(TestStack, Push3TestSizeAndValues) {
+    Stack<int> s;
+    s.push(4);
+    s.push(5);
+    s.push(6);
+    ASSERT_EQ(s.size(), 3);
+    ASSERT_EQ(s.pop(), 6);
+    ASSERT_EQ(s.pop(), 5);
+    ASSERT_EQ(s.pop(), 4);
+}
+
+TEST(TestStack, Push50TestSizeAndValues) {
+    Stack<int> s;
+    for(int i = 0; i < 50; i++){
+        s.push(i);
+    }
+    ASSERT_EQ(s.size(), 50);
+    for(int i = 0; i < 50; i++){
+        ASSERT_EQ(s.pop(), 49-i);
+    }
+}
+
+TEST(TestStack, PopTest1) {
+    Stack<int> s;
+    s.push(6);
+    s.push(7);
+    s.push(8);
+    ASSERT_EQ(s.size(), 3);
+    ASSERT_EQ(s.top(), 8);
+    s.pop();
+    ASSERT_EQ(s.size(), 2);
+    ASSERT_EQ(s.top(), 7);
+}
+
+TEST(TestStack, PopTest2) {
+    Stack<int> s;
+    s.push(6);
+    s.push(7);
+    s.push(8);
+    ASSERT_EQ(s.size(), 3);
+    ASSERT_EQ(s.pop(), 8);
+    ASSERT_EQ(s.size(), 2);
+}
+
+TEST(TestStack, TopTest) {
+    Stack<int> s;
+    s.push(6);
+    s.push(7);
+    s.push(8);
+    ASSERT_EQ(s.top(), 8);
+    s.push(9);
+    ASSERT_EQ(s.top(), 9);
+}
+
+TEST(TestStack, SizeTestEmpty) {
+    Stack<int> s;
+    ASSERT_EQ(s.size(), 0);
+}
+
+TEST(TestStack, SizeTest1) {
+    Stack<int> s;
+    s.push(6);
+    ASSERT_EQ(s.size(), 1);
+}
+
+TEST(TestStack, SizeTest2) {
+    Stack<int> s;
+    s.push(6);
+    s.push(7);
+    s.push(8);
+    ASSERT_EQ(s.size(), 3);
+}
+
+TEST(TestStack, EmptyTestTrue) {
+    Stack<int> s;
+    ASSERT_TRUE(s.isEmpty());
+    s.push(6);
+    ASSERT_FALSE(s.isEmpty());
+    s.push(7);
+    s.push(8);
+    ASSERT_FALSE(s.isEmpty());
+}
 
 //template <typename T>
 //class myVector {
