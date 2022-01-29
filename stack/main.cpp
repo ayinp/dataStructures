@@ -56,13 +56,22 @@ void Stack<T>::push(T value)
 template<typename T>
 T Stack<T>::pop()
 {
-
+    int poped = values[numStored-1];
+    //need to check if is empty so not looking at -1 index
+    numStored -= 1;
+    T* newValues = new T[sz];
+    for(int i = 1; i < numStored; i++){
+        newValues[i-1] = values[i];
+    }
+    delete [] values;
+    values = newValues;
+    return poped;
 }
 
 template<typename T>
 T Stack<T>::top()
 {
-
+    return values[numStored-1];
 }
 
 template<typename T>
@@ -133,6 +142,8 @@ TEST(TestStack, TopTest) {
     ASSERT_EQ(s.top(), 8);
     s.push(9);
     ASSERT_EQ(s.top(), 9);
+    s.pop();
+    ASSERT_EQ(s.top(), 8);
 }
 
 TEST(TestStack, SizeTestEmpty) {
