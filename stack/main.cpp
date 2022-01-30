@@ -15,6 +15,7 @@ public:
     int numStored = 0;
 public:
     Stack();
+    ~Stack();
     void push(T value);
     //pushes on to value
     T pop();
@@ -34,17 +35,24 @@ Stack<T>::Stack()
 }
 
 template<typename T>
+Stack<T>::~Stack()
+{
+    delete [] values;
+}
+
+template<typename T>
 void Stack<T>::push(T value)
 {
     if(numStored >= sz){
         sz*=2;
-        numStored++;
         T* newValues = new T[sz];
         for(int i = 0; i < numStored; i++){
             newValues[i] = values[i];
         }
         delete [] values;
         values = newValues;
+        values[numStored] = value;
+        numStored++;
     }
     else{
         values[numStored] = value;
@@ -60,8 +68,8 @@ T Stack<T>::pop()
     //need to check if is empty so not looking at -1 index
     numStored -= 1;
     T* newValues = new T[sz];
-    for(int i = 1; i < numStored; i++){
-        newValues[i-1] = values[i];
+    for(int i = 0; i < numStored; i++){
+        newValues[i] = values[i];
     }
     delete [] values;
     values = newValues;
@@ -83,7 +91,7 @@ int Stack<T>::size()
 template<typename T>
 bool Stack<T>::isEmpty()
 {
-
+    return numStored == 0;
 }
 
 
@@ -107,9 +115,9 @@ TEST(TestStack, Push50TestSizeAndValues) {
         s.push(i);
     }
     ASSERT_EQ(s.size(), 50);
-//    for(int i = 0; i < 50; i++){
-//        ASSERT_EQ(s.pop(), 49-i);
-//    }
+    for(int i = 0; i < 50; i++){
+        ASSERT_EQ(s.pop(), 49-i);
+    }
 }
 
 TEST(TestStack, PopTest1) {
@@ -173,6 +181,10 @@ TEST(TestStack, EmptyTest) {
     s.push(7);
     s.push(8);
     ASSERT_FALSE(s.isEmpty());
+    s.pop();
+    s.pop();
+    s.pop();
+    ASSERT_TRUE(s.isEmpty());
 }
 
 //template <typename T>
