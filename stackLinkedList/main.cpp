@@ -45,10 +45,9 @@ Stack<T>::Stack()
 template<typename T>
 Stack<T>::~Stack()
 {
-    for(int i = 0; i < numStored; i++){
+    while(size() > 0){
         pop();
     }
-    delete head;
 }
 
 template<typename T>
@@ -75,6 +74,10 @@ T Stack<T>::pop()
 template<typename T>
 T Stack<T>::top()
 {
+    if(!head){
+//      return T{};
+        throw std::logic_error("top called on empty stack :( How could you do that! that was so silly >:(");
+    }
     return head->value;
 }
 
