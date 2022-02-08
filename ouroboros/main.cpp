@@ -202,7 +202,7 @@ TEST(TestDeque, size50FrontBack){
     ASSERT_EQ(d.size(), 50);
     for(int i = 0; i < 50; i++){
         d.popBack();
-        ASSERT_EQ(d.size(), 50-i);
+        ASSERT_EQ(d.size(), 49-i);
     }
     ASSERT_EQ(d.size(), 0);
 }
@@ -215,7 +215,7 @@ TEST(TestDeque, size50FrontFront){
     ASSERT_EQ(d.size(), 50);
     for(int i = 0; i < 50; i++){
         d.popFront();
-        ASSERT_EQ(d.size(), 50-i);
+        ASSERT_EQ(d.size(), 49-i);
     }
     ASSERT_EQ(d.size(), 0);
 }
@@ -228,7 +228,7 @@ TEST(TestDeque, size50BackBack){
     ASSERT_EQ(d.size(), 50);
     for(int i = 0; i < 50; i++){
         d.popBack();
-        ASSERT_EQ(d.size(), 50-i);
+        ASSERT_EQ(d.size(), 49-i);
     }
     ASSERT_EQ(d.size(), 0);
 }
@@ -241,7 +241,7 @@ TEST(TestDeque, size50BackFront){
     ASSERT_EQ(d.size(), 50);
     for(int i = 0; i < 50; i++){
         d.popFront();
-        ASSERT_EQ(d.size(), 50-i);
+        ASSERT_EQ(d.size(), 49-i);
     }
     ASSERT_EQ(d.size(), 0);
 }
