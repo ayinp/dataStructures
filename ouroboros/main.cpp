@@ -10,28 +10,78 @@ using namespace std;
 template<typename T>
 class Deque{
 public:
-    vector<T> deque;
+    T* deque;
     T frontIndex;
     T backIndex;
     int sz;
+    int numstored;
 public:
-    void pushBack(T){};
+    void pushBack(T);
     //  Add an item to the back of the queue
-    void pushFront(T){};
+    void pushFront(T);
     //  Add an item to the front of the queue
-    T popBack(){return T{};};
+    T popBack();
     //  Remove/return an item from the back of the queue
-    T popFront(){return T{};};
+    T popFront();
     //  Remove/return an item from the front of the queue
-    T back(){return T{};};
+    T back();
     //  return the item from the back of the queue without removing it
-    T front(){return T{};};
+    T front();
     //  return the item from the front of the queue without removing it
-    bool isEmpty(){return false;};
+    bool isEmpty();
     //  return TRUE if the queue contains no items
-    int size(){return -1;};
+    int size();
     //  return the number of elements in the queue
 };
+
+template<typename T>
+void Deque<T>::pushBack(T x){
+
+}
+
+template<typename T>
+void Deque<T>::pushFront(T x){
+
+}
+
+template<typename T>
+T Deque<T>::popBack(){
+
+}
+
+template<typename T>
+T Deque<T>::popFront(){
+
+}
+
+template<typename T>
+T Deque<T>::back(){
+
+}
+
+template<typename T>
+T Deque<T>::front(){
+
+}
+
+template<typename T>
+bool Deque<T>::isEmpty(){
+
+}
+
+template<typename T>
+int Deque<T>::size(){
+
+}
+
+
+
+
+
+
+
+
+
 
 TEST(TestDeque, emptyTest){
     Deque<int> d;
@@ -443,41 +493,41 @@ TEST(TestDeque, popAndTopAndPush50FrontBack){
     Deque<int> d;
     for(int i = 0; i < 50; i++){
         d.pushFront(i);
-        ASSERT_EQ(d.front(), i+1);
-        ASSERT_EQ(d.back(), 50-i);
+        ASSERT_EQ(d.front(), i);
+        ASSERT_EQ(d.back(), 0);
     }
     for(int i = 0; i < 50; i++){
-        ASSERT_EQ(d.popBack(), 50-i);
+        ASSERT_EQ(d.popBack(), i);
     }
 }
 TEST(TestDeque, popAndTopAndPush50FrontFront){
     Deque<int> d;
     for(int i = 0; i < 50; i++){
         d.pushFront(i);
-        ASSERT_EQ(d.front(), i+1);
-        ASSERT_EQ(d.back(), 50-i);
+        ASSERT_EQ(d.front(), i);
+        ASSERT_EQ(d.back(), 0);
     }
     for(int i = 0; i < 50; i++){
-        ASSERT_EQ(d.popFront(), i);
+        ASSERT_EQ(d.popFront(), 49-i);
     }
 }
 TEST(TestDeque, popAndTopAndPush50BackBack){
     Deque<int> d;
     for(int i = 0; i < 50; i++){
         d.pushBack(i);
-        ASSERT_EQ(d.front(), i+1);
-        ASSERT_EQ(d.back(), 50-i);
+        ASSERT_EQ(d.front(), 0);
+        ASSERT_EQ(d.back(), i);
     }
     for(int i = 0; i < 50; i++){
-        ASSERT_EQ(d.popBack(), 50-i);
+        ASSERT_EQ(d.popBack(), 49-i);
     }
 }
 TEST(TestDeque, popAndTopAndPush50BackFront){
     Deque<int> d;
     for(int i = 0; i < 50; i++){
         d.pushBack(i);
-        ASSERT_EQ(d.front(), i+1);
-        ASSERT_EQ(d.back(), 50-i);
+        ASSERT_EQ(d.front(), 0);
+        ASSERT_EQ(d.back(), i);
     }
     for(int i = 0; i < 50; i++){
         ASSERT_EQ(d.popFront(), i);
