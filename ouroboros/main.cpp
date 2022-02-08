@@ -11,11 +11,13 @@ template<typename T>
 class Deque{
 public:
     T* deque;
-    T frontIndex;
-    T backIndex;
-    int sz;
-    int numstored;
+    int frontIndex = 0;
+    int backIndex = 4;
+    int sz = 4;
+    int numStored = 0;
 public:
+    Deque();
+    ~Deque();
     void pushBack(T);
     //  Add an item to the back of the queue
     void pushFront(T);
@@ -35,6 +37,18 @@ public:
 };
 
 template<typename T>
+Deque<T>::Deque()
+{
+   deque = new T[sz];
+}
+
+template<typename T>
+Deque<T>::~Deque()
+{
+    delete [] deque;
+}
+
+template<typename T>
 void Deque<T>::pushBack(T x){
 
 }
@@ -51,27 +65,45 @@ T Deque<T>::popBack(){
 
 template<typename T>
 T Deque<T>::popFront(){
+    int popped = deque[frontIndex];
+    if(numStored <= 0.5*sz){
+        sz /= 2;
+        T* newDeque = new T[sz];
+        for(int i = 1; i < numStored; i++){
+            newDeque[i] = deque[i];
+        }
+        delete [] deque;
+        deque = newDeque;
+        numStored--;
 
+    }
+    else{
+        popped = deque[frontIndex];
+        frontIndex++;
+    }
+
+
+    return popped;
 }
 
 template<typename T>
 T Deque<T>::back(){
-
+    return deque[numStored];
 }
 
 template<typename T>
 T Deque<T>::front(){
-
+    return deque[0];
 }
 
 template<typename T>
 bool Deque<T>::isEmpty(){
-
+    return numStored = 0;
 }
 
 template<typename T>
 int Deque<T>::size(){
-
+    return numStored;
 }
 
 
