@@ -8,6 +8,8 @@
 template<typename T>
 class BSTree;
 
+
+//NODE
 using namespace std;
 template<typename T>
 class Node{
@@ -17,26 +19,51 @@ private:
     Node* left = nullptr;
 public:
     Node();
+    bool includes(T val);
+    void insert(T val);
     friend BSTree<T>;
 };
 
 template<typename T>
+Node<T>::Node()
+{
+
+}
+
+template<typename T>
+bool Node<T>::includes(T val)
+{
+    if(val == value){
+        return true;
+    }
+    if(val > value && right != nullptr){
+       return right->includes(value);
+    }
+    if(val < value & left != nullptr){
+        return left->includes(value);
+    }
+        return false;
+}
+
+
+//TREE
+template<typename T>
 class BSTree{
 private:
     Node<T>* root = nullptr;
+    int sz = 0;
 public:
     BSTree();
     ~BSTree();
-    bool includes(T value); //done
-    void insert(T value);   //done
-    void remove(T value);   //done
+    bool includes(T value);
+    void insert(T value);
+    void remove(T value);
     vector<T> inOrder();
     vector<T> preOrder();
     vector<T> postOrder();
-    int size();             //done
+    int size() { return sz; };             //done
     bool isEmpty() { return size() == 0; } // done
 };
-
 
 template<typename T>
 BSTree<T>::BSTree()
@@ -53,7 +80,13 @@ BSTree<T>::~BSTree()
 template<typename T>
 bool BSTree<T>::includes(T value)
 {
-
+    if(value > root->value){
+        return root->right->includes(value);
+    }
+    if(value < root->value){
+        return root->left->includes(value);
+    }
+        return true;
 }
 
 template<typename T>
@@ -82,12 +115,6 @@ vector<T> BSTree<T>::preOrder()
 
 template<typename T>
 vector<T> BSTree<T>::postOrder()
-{
-
-}
-
-template<typename T>
-int BSTree<T>::size()
 {
 
 }
@@ -258,4 +285,6 @@ int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
+
+
 
