@@ -212,9 +212,10 @@ TEST(TestTree, preOrderTest){
     t.insert(8);
     t.insert(7);
     vector<int> vec = t.preOrder();
+    ASSERT_TRUE(vec.size()==t.size());
     for(int i = 1; i <= 9; i++){
         bool found = false;
-        for(int j = 0; j < t.size(); j++){
+        for(int j = 0; j < vec.size(); j++){
             if(vec[j] == i){
                 found = true;
             }
@@ -235,9 +236,10 @@ TEST(TestTree, postOrderTest){
     t.insert(8);
     t.insert(7);
     vector<int> vec = t.postOrder();
+    ASSERT_TRUE(vec.size()==t.size());
     for(int i = 1; i <= 9; i++){
         bool found = false;
-        for(int j = 0; j < t.size(); j++){
+        for(int j = 0; j < vec.size(); j++){
             if(vec[j] == i){
                 found = true;
             }
