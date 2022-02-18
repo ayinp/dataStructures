@@ -38,6 +38,62 @@ public:
 };
 
 
+template<typename T>
+BSTree<T>::BSTree()
+{
+
+}
+
+template<typename T>
+BSTree<T>::~BSTree()
+{
+
+}
+
+template<typename T>
+bool BSTree<T>::includes(T value)
+{
+
+}
+
+template<typename T>
+void BSTree<T>::insert(T value)
+{
+
+}
+
+template<typename T>
+void BSTree<T>::remove(T value)
+{
+
+}
+
+template<typename T>
+vector<T> BSTree<T>::inOrder()
+{
+
+}
+
+template<typename T>
+vector<T> BSTree<T>::preOrder()
+{
+
+}
+
+template<typename T>
+vector<T> BSTree<T>::postOrder()
+{
+
+}
+
+template<typename T>
+int BSTree<T>::size()
+{
+
+}
+
+
+
 TEST(TestTree, emptySizeTest){
     BSTree<int> t;
     ASSERT_TRUE(t.isEmpty());
@@ -157,11 +213,13 @@ TEST(TestTree, preOrderTest){
     t.insert(7);
     vector<int> vec = t.preOrder();
     for(int i = 1; i <= 9; i++){
+        bool found = false;
         for(int j = 0; j < t.size(); j++){
-            if(t.includes(j) == i){
-                ASSERT_EQ(vec[j], i);
+            if(vec[j] == i){
+                found = true;
             }
         }
+        ASSERT_TRUE(found);
     }
 }
 
@@ -178,11 +236,13 @@ TEST(TestTree, postOrderTest){
     t.insert(7);
     vector<int> vec = t.postOrder();
     for(int i = 1; i <= 9; i++){
+        bool found = false;
         for(int j = 0; j < t.size(); j++){
-            if(t.includes(j) == i){
-                ASSERT_EQ(vec[j], i);
+            if(vec[j] == i){
+                found = true;
             }
         }
+        ASSERT_TRUE(found);
     }
 }
 
@@ -196,5 +256,4 @@ int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
-
 
