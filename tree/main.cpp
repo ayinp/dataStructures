@@ -125,6 +125,66 @@ TEST(TestTree, includesTestMore){
     ASSERT_FALSE(t.includes(4));
 }
 
+TEST(TestTree, inOrderTest){
+    BSTree<int> t;
+    t.insert(2);
+    t.insert(3);
+    t.insert(1);
+    t.insert(5);
+    t.insert(9);
+    t.insert(6);
+    t.insert(4);
+    t.insert(8);
+    t.insert(7);
+    vector<int> vec = t.inOrder();
+    for(int i = 1; i < t.size(); i++ ){
+        if(vec[i] > vec[i-1]){
+            ASSERT_TRUE(true);
+        }
+    }
+}
+
+TEST(TestTree, preOrderTest){
+    BSTree<int> t;
+    t.insert(2);
+    t.insert(3);
+    t.insert(1);
+    t.insert(5);
+    t.insert(9);
+    t.insert(6);
+    t.insert(4);
+    t.insert(8);
+    t.insert(7);
+    vector<int> vec = t.preOrder();
+    for(int i = 1; i <= 9; i++){
+        for(int j = 0; j < t.size(); j++){
+            if(t.includes(j) == i){
+                ASSERT_EQ(vec[j], i);
+            }
+        }
+    }
+}
+
+TEST(TestTree, postOrderTest){
+    BSTree<int> t;
+    t.insert(2);
+    t.insert(3);
+    t.insert(1);
+    t.insert(5);
+    t.insert(9);
+    t.insert(6);
+    t.insert(4);
+    t.insert(8);
+    t.insert(7);
+    vector<int> vec = t.postOrder();
+    for(int i = 1; i <= 9; i++){
+        for(int j = 0; j < t.size(); j++){
+            if(t.includes(j) == i){
+                ASSERT_EQ(vec[j], i);
+            }
+        }
+    }
+}
 
 //TEST(TestDeque, emptyTest){
 //    Deque<int> d;
