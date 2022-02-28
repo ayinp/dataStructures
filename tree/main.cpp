@@ -19,14 +19,27 @@ private:
     Node* left = nullptr;
 public:
     Node();
+    ~Node();
     bool includes(T val);
     void insert(T val);
+    bool remove(T val, Node<T>* parent);
     friend BSTree<T>;
+    void inOrder(vector<T>& vec);
+    void preOrder(vector<T>& vec);
+    void postOrder(vector<T>& vec);
 };
 
 template<typename T>
 Node<T>::Node()
 {
+
+}
+
+template<typename T>
+Node<T>::~Node()
+{
+    delete left;
+    delete right;
 
 }
 
@@ -37,10 +50,10 @@ bool Node<T>::includes(T val)
         return true;
     }
     if(val > value && right != nullptr){
-        return right->includes(value);
+        return right->includes(val);
     }
     if(val < value & left != nullptr){
-        return left->includes(value);
+        return left->includes(val);
     }
     return false;
 }
@@ -64,6 +77,101 @@ void Node<T>::insert(T val)
     }
 }
 
+template<typename T>
+bool Node<T>::remove(T val, Node<T>* parent)
+{
+    if(val == value){
+        if(right == nullptr && left == nullptr){
+            if(val > parent->value){
+                parent->right = nullptr;
+            }
+            else{
+                parent->left = nullptr;
+            }
+            delete this;
+            return true;
+        }
+        if(right == nullptr){
+            if(val > parent->value){
+                parent->right = left;
+            }
+            else{
+                parent->left = left;
+            }
+            left = nullptr;
+            delete this;
+            return true;
+        }
+        if(left == nullptr){
+            if(val > parent->value){
+                parent->right = right;
+            }
+            else{
+                parent->left = right;
+            }
+            right = nullptr;
+            delete this;
+            return true;
+        }
+        Node<T>* rightMost = left;
+        Node<T>* RMParent = this;
+        while(rightMost->right){
+            RMParent = rightMost;
+            rightMost = rightMost->right;
+        }
+        value = rightMost->value;
+        rightMost->remove(value, RMParent);
+        return true;
+    }
+    if(val > value && right != nullptr){
+        return right->remove(val, this);
+    }
+    if(val < value && left != nullptr){
+        return left->remove(val, this);
+    }
+    return false;
+}
+
+template<typename T>
+void Node<T>::inOrder(vector<T> &vec)
+{
+    if(left){
+        left->inOrder(vec);
+    }
+    vec.push_back(value);
+    if(right){
+        right->inOrder(vec);
+    }
+
+}
+
+template<typename T>
+void Node<T>::preOrder(vector<T> &vec)
+{
+    vec.push_back(value);
+    if(left){
+        left->inOrder(vec);
+    }
+    if(right){
+        right->inOrder(vec);
+    }
+}
+
+template<typename T>
+void Node<T>::postOrder(vector<T> &vec)
+{
+    if(left){
+        left->inOrder(vec);
+    }
+    if(right){
+        right->inOrder(vec);
+    }
+    vec.push_back(value);
+}
+
+
+
+
 
 //TREE
 template<typename T>
@@ -75,13 +183,14 @@ public:
     BSTree();
     ~BSTree();
     bool includes(T value); //done
-    void insert(T value);
+    void insert(T value);   //done
     void remove(T value);
     vector<T> inOrder();
     vector<T> preOrder();
     vector<T> postOrder();
     int size() { return sz; };             //done
     bool isEmpty() { return size() == 0; } // done
+
 };
 
 template<typename T>
@@ -93,7 +202,7 @@ BSTree<T>::BSTree()
 template<typename T>
 BSTree<T>::~BSTree()
 {
-
+    delete root;
 }
 
 template<typename T>
@@ -146,25 +255,82 @@ void BSTree<T>::insert(T value)
 template<typename T>
 void BSTree<T>::remove(T value)
 {
+    if(root != nullptr){
+        //if not root
+        if(value != root->value){
+            if(root->remove(value, root)){
+                sz--;
+            }
+            return;
+        }
+
+        sz--;
+        //if root
+        if(root->right == nullptr && root->left == nullptr){
+            delete root;
+            root = nullptr;
+            return;
+        }
+        if(root->right == nullptr){
+            Node<T>* oldRoot = root;
+            root = root->left;
+            oldRoot->left = nullptr;
+            delete oldRoot;
+            return;
+        }
+        if(root->left == nullptr){
+            Node<T>* oldRoot = root;
+            root = root->right;
+            oldRoot->right = nullptr;
+            delete oldRoot;
+            return;
+        }
+
+        Node<T>* rightMost = root->left;
+        Node<T>* RMParent = root;
+
+        while(rightMost->right){
+            RMParent = rightMost;
+            rightMost = rightMost->right;
+        }
+
+        root->value = rightMost->value;
+
+        rightMost->remove(root->value, RMParent);
+        return;
+    }
+
 
 }
 
 template<typename T>
 vector<T> BSTree<T>::inOrder()
 {
-
+    vector<T> list;
+    if(root != nullptr){
+        root->inOrder(list);
+    }
+    return list;
 }
 
 template<typename T>
 vector<T> BSTree<T>::preOrder()
 {
-
+    vector<T> list;
+    if(root != nullptr){
+        root->preOrder(list);
+    }
+    return list;
 }
 
 template<typename T>
 vector<T> BSTree<T>::postOrder()
 {
-
+    vector<T> list;
+    if(root != nullptr){
+        root->postOrder(list);
+    }
+    return list;
 }
 
 
@@ -190,19 +356,20 @@ TEST(TestTree, emptyAndSizeTestMore){
     t.insert(7);
     ASSERT_FALSE(t.isEmpty());
     ASSERT_EQ(t.size(), 9);
-    //    t.remove(2);
-    //    t.remove(3);
-    //    t.remove(1);
-    //    t.remove(5);
-    //    t.remove(9);
-    //    ASSERT_FALSE(t.isEmpty());
-    //    ASSERT_EQ(t.size(), 4);
-    //    t.remove(6);
-    //    t.remove(4);
-    //    t.remove(8);
-    //    t.remove(7);
-    //    ASSERT_TRUE(t.isEmpty());
-    //    ASSERT_EQ(t.size(), 0);
+    t.remove(2);
+    t.remove(5);
+    t.remove(1);
+    t.remove(3);
+    t.remove(9);
+    t.remove(100);
+    ASSERT_FALSE(t.isEmpty());
+    ASSERT_EQ(t.size(), 4);
+    t.remove(6);
+    t.remove(4);
+    t.remove(8);
+    t.remove(7);
+    ASSERT_TRUE(t.isEmpty());
+    ASSERT_EQ(t.size(), 0);
 }
 
 TEST(TestTree, includesTestEmpty){
@@ -234,26 +401,26 @@ TEST(TestTree, includesTestMore){
     ASSERT_FALSE(t.includes(100));
     ASSERT_TRUE(t.includes(4));
     ASSERT_TRUE(t.includes(3));
-    //    t.remove(2);
-    //    t.remove(3);
-    //    t.remove(1);
-    //    t.remove(5);
-    //    t.remove(9);
-    //    ASSERT_FALSE(t.includes(3));
-    //    ASSERT_FALSE(t.includes(2));
-    //    ASSERT_FALSE(t.includes(1));
-    //    ASSERT_FALSE(t.includes(5));
-    //    ASSERT_FALSE(t.includes(9));
-    //    ASSERT_TRUE(t.includes(4));
-    //    ASSERT_TRUE(t.includes(6));
-    //    ASSERT_TRUE(t.includes(8));
-    //    ASSERT_TRUE(t.includes(7));
-    //    t.remove(6);
-    //    t.remove(4);
-    //    t.remove(8);
-    //    t.remove(7);
-    //    ASSERT_FALSE(t.includes(100));
-    //    ASSERT_FALSE(t.includes(4));
+    t.remove(2);
+    t.remove(3);
+    t.remove(1);
+    t.remove(5);
+    t.remove(9);
+    ASSERT_FALSE(t.includes(3));
+    ASSERT_FALSE(t.includes(2));
+    ASSERT_FALSE(t.includes(1));
+    ASSERT_FALSE(t.includes(5));
+    ASSERT_FALSE(t.includes(9));
+    ASSERT_TRUE(t.includes(4));
+    ASSERT_TRUE(t.includes(6));
+    ASSERT_TRUE(t.includes(8));
+    ASSERT_TRUE(t.includes(7));
+    t.remove(6);
+    t.remove(4);
+    t.remove(8);
+    t.remove(7);
+    ASSERT_FALSE(t.includes(100));
+    ASSERT_FALSE(t.includes(4));
 }
 
 TEST(TestTree, inOrderTest){
