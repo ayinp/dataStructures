@@ -150,10 +150,10 @@ void Node<T>::preOrder(vector<T> &vec)
 {
     vec.push_back(value);
     if(left){
-        left->inOrder(vec);
+        left->preOrder(vec);
     }
     if(right){
-        right->inOrder(vec);
+        right->preOrder(vec);
     }
 }
 
@@ -161,10 +161,10 @@ template<typename T>
 void Node<T>::postOrder(vector<T> &vec)
 {
     if(left){
-        left->inOrder(vec);
+        left->postOrder(vec);
     }
     if(right){
-        right->inOrder(vec);
+        right->postOrder(vec);
     }
     vec.push_back(value);
 }
