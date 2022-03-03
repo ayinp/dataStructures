@@ -17,12 +17,13 @@ private:
     T value;
     Node* right = nullptr;
     Node* left = nullptr;
+    int height = -1;
 public:
     Node();
     ~Node();
     bool includes(T val);
     void insert(T val);
-    bool remove(T val, Node<T>* parent);
+    bool remove(T val, Node<T> *&myPointer);
     friend BSTree<T>;
     void inOrder(vector<T>& vec);
     void preOrder(vector<T>& vec);
@@ -78,56 +79,68 @@ void Node<T>::insert(T val)
 }
 
 template<typename T>
-bool Node<T>::remove(T val, Node<T>* parent)
+bool Node<T>::remove(T val, Node<T>*& myPointer)
 {
     if(val == value){
         if(right == nullptr && left == nullptr){
-            if(val > parent->value){
-                parent->right = nullptr;
-            }
-            else{
-                parent->left = nullptr;
-            }
+//            if(val > parent->value){
+//                parent->right = nullptr;
+//            }
+//            else{
+//                parent->left = nullptr;
+//            }
+            myPointer = nullptr;
             delete this;
             return true;
         }
         if(right == nullptr){
-            if(val > parent->value){
-                parent->right = left;
-            }
-            else{
-                parent->left = left;
-            }
+//            if(val > parent->value){
+//                parent->right = left;
+//            }
+//            else{
+//                parent->left = left;
+//            }
+            myPointer = left;
             left = nullptr;
             delete this;
             return true;
         }
         if(left == nullptr){
-            if(val > parent->value){
-                parent->right = right;
-            }
-            else{
-                parent->left = right;
-            }
+//            if(val > parent->value){
+//                parent->right = right;
+//            }
+//            else{
+//                parent->left = right;
+//            }
+            myPointer = right;
             right = nullptr;
             delete this;
             return true;
         }
         Node<T>* rightMost = left;
         Node<T>* RMParent = this;
+        if(rightMost->right != nullptr){
         while(rightMost->right){
             RMParent = rightMost;
             rightMost = rightMost->right;
         }
         value = rightMost->value;
-        rightMost->remove(value, RMParent);
+        rightMost->remove(value, RMParent->right);
         return true;
+        }
+        else{
+            value = rightMost->value;
+            rightMost->remove(value, RMParent->left);
+            return true;
+        }
     }
     if(val > value && right != nullptr){
-        return right->remove(val, this);
+//        return right->remove(val, this);
+        return right->remove(val, right);
     }
     if(val < value && left != nullptr){
-        return left->remove(val, this);
+//        return left->remove(val, this);
+         return left->remove(val, left);
     }
     return false;
 }
@@ -256,48 +269,52 @@ template<typename T>
 void BSTree<T>::remove(T value)
 {
     if(root != nullptr){
-        //if not root
-        if(value != root->value){
-            if(root->remove(value, root)){
-                sz--;
-            }
-            return;
+        if(root->remove(value, root)){
+            sz--;
         }
-
-        sz--;
-        //if root
-        if(root->right == nullptr && root->left == nullptr){
-            delete root;
-            root = nullptr;
-            return;
-        }
-        if(root->right == nullptr){
-            Node<T>* oldRoot = root;
-            root = root->left;
-            oldRoot->left = nullptr;
-            delete oldRoot;
-            return;
-        }
-        if(root->left == nullptr){
-            Node<T>* oldRoot = root;
-            root = root->right;
-            oldRoot->right = nullptr;
-            delete oldRoot;
-            return;
-        }
-
-        Node<T>* rightMost = root->left;
-        Node<T>* RMParent = root;
-
-        while(rightMost->right){
-            RMParent = rightMost;
-            rightMost = rightMost->right;
-        }
-
-        root->value = rightMost->value;
-
-        rightMost->remove(root->value, RMParent);
         return;
+        //if not root
+//        if(value != root->value){
+//            if(root->remove(value, root)){
+//                sz--;
+//            }
+//            return;
+//        }
+
+//        sz--;
+//        //if root
+//        if(root->right == nullptr && root->left == nullptr){
+//            delete root;
+//            root = nullptr;
+//            return;
+//        }
+//        if(root->right == nullptr){
+//            Node<T>* oldRoot = root;
+//            root = root->left;
+//            oldRoot->left = nullptr;
+//            delete oldRoot;
+//            return;
+//        }
+//        if(root->left == nullptr){
+//            Node<T>* oldRoot = root;
+//            root = root->right;
+//            oldRoot->right = nullptr;
+//            delete oldRoot;
+//            return;
+//        }
+
+//        Node<T>* rightMost = root->left;
+//        Node<T>* RMParent = root;
+
+//        while(rightMost->right){
+//            RMParent = rightMost;
+//            rightMost = rightMost->right;
+//        }
+
+//        root->value = rightMost->value;
+
+//        rightMost->remove(root->value, RMParent);
+//        return;
     }
 
 
