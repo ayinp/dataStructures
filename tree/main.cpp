@@ -357,6 +357,9 @@ void BSTree<T>::insert(T value)
         }
 
     }
+    if(root->balanceFactor() > 1 || root->balanceFactor() < -1){
+        root->rebalance(root);
+    }
 
 }
 
@@ -367,9 +370,13 @@ void BSTree<T>::remove(T value)
         if(root->remove(value, root)){
             sz--;
         }
+        if(root){
+            if(root->balanceFactor() > 1 || root->balanceFactor() < -1){
+                root->rebalance(root);
+            }
+        }
         return;
     }
-
 
 }
 
@@ -558,6 +565,16 @@ TEST(TestTree, postOrderTest){
         }
         ASSERT_TRUE(found);
     }
+}
+
+TEST(TestTree, specialTest){
+    BSTree<int> t;
+    t.insert(30);
+    t.insert(5);
+    t.insert(35);
+    t.insert(32);
+    t.insert(40);
+    t.insert(45);
 }
 
 //TEST(TestDeque, emptyTest){
