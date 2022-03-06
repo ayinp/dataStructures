@@ -22,14 +22,18 @@ public:
     Node();
     ~Node();
     bool includes(T val);
-    bool insert(T val);
+    bool insert(T val, Node<T> *&myPointer);
     bool remove(T val, Node<T> *&myPointer);
     friend BSTree<T>;
     void inOrder(vector<T>& vec);
     void preOrder(vector<T>& vec);
     void postOrder(vector<T>& vec);
     void updateHeight();
-    void heightnullptr();
+    int heightChild(bool isLeft);
+    int balanceFactor();
+    void rebalance(Node<T> *&myPointer);
+    void rotateLeft(Node<T>*& myPointer);
+    void rotateRight(Node<T>*& myPointer);
 };
 
 template<typename T>
@@ -62,29 +66,30 @@ bool Node<T>::includes(T val)
 }
 
 template<typename T>
-bool Node<T>::insert(T val)
+bool Node<T>::insert(T val, Node<T>*& myPointer)
 {
+    bool in = false;
     if(val > value && right != nullptr){
-        bool in = right->insert(val);
-        return in;
+        in = right->insert(val, right);
     }
     else if(val < value && left != nullptr){
-        bool in = left->insert(val);
-        return in;
+        in = left->insert(val, left);
     }
     else if(val > value && right == nullptr){
         right = new Node<T>;
         right->value = val;
-        return true;
+        in = true;
     }
     else if(val < value && left == nullptr){
         left = new Node<T>;
-        left->value = val; 
-        return true;
+        left->value = val;
+        in = true;
     }
-    else{
-        return false;
+    updateHeight();
+    if(balanceFactor() > 1 || balanceFactor() < -1){
+        rebalance(myPointer);
     }
+    return in;
 }
 
 template<typename T>
@@ -111,27 +116,40 @@ bool Node<T>::remove(T val, Node<T>*& myPointer)
         Node<T>* rightMost = left;
         Node<T>* RMParent = this;
         if(rightMost->right != nullptr){
-        while(rightMost->right){
-            RMParent = rightMost;
-            rightMost = rightMost->right;
-        }
-        value = rightMost->value;
-        rightMost->remove(value, RMParent->right);
-        return true;
+            while(rightMost->right){
+                RMParent = rightMost;
+                rightMost = rightMost->right;
+            }
+            value = rightMost->value;
+            rightMost->remove(value, RMParent->right);
+            updateHeight();
+            if(balanceFactor() > 1 || balanceFactor() < -1){
+                rebalance(myPointer);
+            }
+            return true;
         }
         else{
             value = rightMost->value;
             rightMost->remove(value, RMParent->left);
+            updateHeight();
+            if(balanceFactor() > 1 || balanceFactor() < -1){
+                rebalance(myPointer);
+            }
             return true;
         }
     }
+    bool in = false;
     if(val > value && right != nullptr){
-        return right->remove(val, right);
+        in = right->remove(val, right);
     }
-    if(val < value && left != nullptr){
-         return left->remove(val, left);
+    else if(val < value && left != nullptr){
+        in = left->remove(val, left);
     }
-    return false;
+    updateHeight();
+    if(balanceFactor() > 1 || balanceFactor() < -1){
+        rebalance(myPointer);
+    }
+    return in;
 }
 
 template<typename T>
@@ -171,22 +189,86 @@ void Node<T>::postOrder(vector<T> &vec)
     vec.push_back(value);
 }
 
-
-// how does calculate height of -1 if its a height on a nullptr???? nullptrs cant have fields ??
 template<typename T>
 void Node<T>::updateHeight()
 {
-    if(left->height > right->height){
-
+    if(heightChild(true) > heightChild(false)){
+        height = heightChild(true) + 1;
+    }
+    else{
+        height = heightChild(false) + 1;
     }
 }
 
 template<typename T>
-void Node<T>::heightnullptr()
+int Node<T>::heightChild(bool isLeft)
 {
-    if(right == nullptr){
-
+    if(isLeft){
+        if(left == nullptr){
+            return -1;
+        }
+        //not null
+        return left->height;
     }
+    //not left
+    if(right == nullptr){
+        return -1;
+    }
+    //not null
+    return right->height;
+}
+
+template<typename T>
+int Node<T>::balanceFactor()
+{
+    return heightChild(true)-heightChild(false);
+}
+
+template<typename T>
+void Node<T>::rebalance(Node<T>*& myPointer)
+{
+    if(balanceFactor() > 0 && left->balanceFactor() > 0){
+        rotateRight(myPointer);
+    }
+    else if(balanceFactor() > 0 && left->balanceFactor() < 0){
+        left->rotateLeft(left);
+        rotateRight(myPointer);
+    }
+    else if(balanceFactor() < 0 && right->balanceFactor() > 0){
+        right->rotateRight(right);
+        rotateLeft(myPointer);
+    }
+    else if(balanceFactor() < 0 && right->balanceFactor() < 0){
+        rotateLeft(myPointer);
+    }
+}
+
+template<typename T>
+void Node<T>::rotateLeft(Node<T>*& myPointer)
+{
+    Node<T>* P = this;
+    Node<T>* Q = right;
+    Node<T>* A = left;
+    Node<T>* B = right->left;
+    Node<T>* C = right->right;
+
+    P->right = B;
+    Q->left = P;
+    myPointer = Q;
+}
+
+template<typename T>
+void Node<T>::rotateRight(Node<T>*& myPointer)
+{
+    Node<T>* Q = this;
+    Node<T>* P = left;
+    Node<T>* A = left->left;
+    Node<T>* B = left->right;
+    Node<T>* C = right;
+
+    Q->left = B;
+    P->right = Q;
+    myPointer = P;
 }
 
 
@@ -254,12 +336,12 @@ void BSTree<T>::insert(T value)
     else{
 
         if(value > root->value && root->right != nullptr){
-            if(root->right->insert(value)){
+            if(root->right->insert(value, root->right)){
                 sz++;
             }
         }
         else if(value < root->value && root->left != nullptr){
-            if(root->left->insert(value)){
+            if(root->left->insert(value, root->left)){
                 sz++;
             }
         }
@@ -488,6 +570,4 @@ int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
-
-
 
