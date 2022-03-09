@@ -146,9 +146,7 @@ bool Node<T>::remove(T val, Node<T>*& myPointer)
         in = left->remove(val, left);
     }
     updateHeight();
-    if(balanceFactor() > 1 || balanceFactor() < -1){
-        rebalance(myPointer);
-    }
+
     return in;
 }
 
