@@ -18,6 +18,8 @@ public:
     T remove();
     int size();
     bool isEmpty();
+    int parentIndex(int childIn);
+    int childIndex(bool isLeft, int parentIn);
 };
 
 template<typename T>
@@ -30,24 +32,107 @@ PriorityQueue<T>::~PriorityQueue()
 {
 }
 
+// left child is always parent indecy * 2 + 1
+// right child is always parent indecy * 2 + 2
+// parent from right child is always /2 - 1
+// parent from left child is always /2 - 0.5
+
 template<typename T>
 void PriorityQueue<T>::insert(T value)
 {
+    if(things.empty()){
+        things.push_back(value);
+        return;
+    }
+    things.push_back(value);
+    int childIn = things.size()-1;
+    while(things[childIn] > things[parentIndex(childIn)]){
+        swap(things[childIn], things[parentIndex(childIn)]);
+        childIn = parentIndex(childIn);
+    }
 }
 
 template<typename T>
 T PriorityQueue<T>::remove()
 {
+    if(things.empty()){
+        return T{};
+        //put error guy here
+    }
+    if(things.size() == 1){
+        T value = things[0];
+        things.pop_back();
+        return value;
+    }
+    T value = things[0];
+    swap(things[size()-1], things[0]);
+    things.pop_back();
+    int parentIn = 0;
+    while(parentIn < things.size()){
+        if(childIndex(false, parentIn) < things.size()){
+            if(things[childIndex(true, parentIn)] /*left*/ > things[childIndex(false, parentIn)]/*right*/){
+                if(things[parentIn] > things[childIndex(true, parentIn)]){
+                    swap(things[parentIn], things[childIndex(true, parentIn)]);
+                    parentIn = childIndex(true, parentIn);
+                }
+                else{
+                    break;
+                }
+            }
+            //right > left or equal
+            else{
+                if(things[parentIn] > things[childIndex(false, parentIn)]){
+                    swap(things[parentIn], things[childIndex(false, parentIn)]);
+                    parentIn = childIndex(false, parentIn);
+                    cout << "PARENTIN " << parentIn << endl;
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        else{
+            if(things[parentIn] < things[childIndex(true, parentIn)]){
+                swap(things[parentIn], things[childIndex(true, parentIn)]);
+                parentIn = childIndex(true, parentIn);
+            }
+            else{
+                break;
+            }
+        }
+
+    }
+    return value;
+
 }
 
 template<typename T>
 int PriorityQueue<T>::size()
 {
+    return things.size();
 }
 
 template<typename T>
 bool PriorityQueue<T>::isEmpty()
 {
+    return things.size() == 0;
+}
+
+template<typename T>
+int PriorityQueue<T>::parentIndex(int childIn)
+{
+
+    return (childIn-1)/2;
+
+}
+
+template<typename T>
+int PriorityQueue<T>::childIndex(bool isLeft, int parentIn)
+{
+    if(isLeft){
+        return (parentIn*2)+1;
+    }
+    return (parentIn*2)+2;
 }
 
 TEST(TestPQ, SizeTestEmpty) {
