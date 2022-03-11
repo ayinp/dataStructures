@@ -91,7 +91,7 @@ T PriorityQueue<T>::remove()
                 }
             }
         }
-        else{
+        else if(childIndex(true, parentIn) < things.size()){
             if(things[parentIn] < things[childIndex(true, parentIn)]){
                 swap(things[parentIn], things[childIndex(true, parentIn)]);
                 parentIn = childIndex(true, parentIn);
@@ -99,6 +99,9 @@ T PriorityQueue<T>::remove()
             else{
                 break;
             }
+        }
+        else{
+            break;
         }
 
     }
