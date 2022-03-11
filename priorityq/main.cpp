@@ -71,7 +71,7 @@ T PriorityQueue<T>::remove()
     while(parentIn < things.size()){
         if(childIndex(false, parentIn) < things.size()){
             if(things[childIndex(true, parentIn)] /*left*/ > things[childIndex(false, parentIn)]/*right*/){
-                if(things[parentIn] > things[childIndex(true, parentIn)]){
+                if(things[parentIn] < things[childIndex(true, parentIn)]){
                     swap(things[parentIn], things[childIndex(true, parentIn)]);
                     parentIn = childIndex(true, parentIn);
                 }
@@ -81,7 +81,7 @@ T PriorityQueue<T>::remove()
             }
             //right > left or equal
             else{
-                if(things[parentIn] > things[childIndex(false, parentIn)]){
+                if(things[parentIn] < things[childIndex(false, parentIn)]){
                     swap(things[parentIn], things[childIndex(false, parentIn)]);
                     parentIn = childIndex(false, parentIn);
                     cout << "PARENTIN " << parentIn << endl;
