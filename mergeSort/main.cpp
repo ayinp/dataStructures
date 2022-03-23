@@ -32,18 +32,25 @@ void mergeSort(vector<T>& values){
     mergeSort(left);
     mergeSort(right);
     vector<T> newSort = {};
-    int inL = 0;
-    int inR = 0;
-    while(inR < right.size() && inL < left.size()){
-        if(left[inR] > right[inL]){
-            newSort.push_back(right[inR]);
-            inR++;
+    while(right.size() > 0||left.size() > 0){
+        if((right.size() > 0 && left.size() > 0) && left[0] > right[0]){
+            newSort.push_back(right[0]);
+            right.erase(right.begin());
         }
-        else{
-            newSort.push_back(left[inL]);
-            inL++;
+        else if((right.size() > 0 && left.size() > 0) && (left[0] < right[0] || left[0] == right[0])){
+            newSort.push_back(left[0]);
+            left.erase(left.begin());
+        }
+        else if(right.size() == 0 && left.size() > 0){
+            newSort.push_back(left[0]);
+            left.erase(left.begin());
+        }
+        else if(left.size() == 0 && right.size() > 0){
+            newSort.push_back(right[0]);
+            right.erase(right.begin());
         }
     }
+    values = newSort;
 }
 
 TEST(TestSort, noEl){
@@ -52,17 +59,37 @@ TEST(TestSort, noEl){
     ASSERT_EQ(v.size(), 0);
 }
 
-TEST(testSort, oneEl){
+TEST(TestSort, oneEl){
     vector<int> v = {3};
     mergeSort(v);
     ASSERT_EQ(v.size(), 1);
     ASSERT_EQ(v[0], 3);
 }
 
-TEST(testSort, twoElSort){
+TEST(TestSort, twoElSort){
     vector<int> v = {2, 5};
     mergeSort(v);
-    ASSERT_EQ()
+    ASSERT_EQ(v[0], 2);
+    ASSERT_EQ(v[1], 5);
+}
+
+TEST(TestSort, twoElNonSort){
+    vector<int> v = {5, 2};
+    mergeSort(v);
+    ASSERT_EQ(v[0], 2);
+    ASSERT_EQ(v[1], 5);
+}
+
+TEST(TestSort, tenElSort){
+    vector<int> v = {1, 3, 4, 5, 6, 13, 17, 22, 89, 90};
+    mergeSort(v);
+    ASSERT_EQ(v, (vector<int>{1, 3, 4, 5, 6, 13, 17, 22, 89, 90}));
+}
+
+TEST(TestSort, tenElNonSort){
+    vector<int> v = {4, 90, 3, 22, 1, 13, 17, 6, 89, 5};
+    mergeSort(v);
+    ASSERT_EQ(v, (vector<int>{1, 3, 4, 5, 6, 13, 17, 22, 89, 90}));
 }
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
