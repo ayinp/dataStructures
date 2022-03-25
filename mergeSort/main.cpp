@@ -7,6 +7,11 @@
 
 using namespace std;
 
+bool inLessThanEnd(int in, int size){
+    return (size-in) > 0;
+}
+
+
 template<typename T>
 void mergeSort(vector<T>& values){
     if((values.size() <= 1)){
@@ -32,26 +37,33 @@ void mergeSort(vector<T>& values){
     mergeSort(left);
     mergeSort(right);
     vector<T> newSort = {};
-    while(right.size() > 0||left.size() > 0){
-        if((right.size() > 0 && left.size() > 0) && left[0] > right[0]){
-            newSort.push_back(right[0]);
-            right.erase(right.begin());
+    int Lin = 0;
+    int Rin = 0;
+
+    while(inLessThanEnd(Rin, right.size()) || inLessThanEnd(Lin, left.size())){
+
+        if((inLessThanEnd(Rin, right.size()) && inLessThanEnd(Lin, left.size())) && left[Lin] > right[Rin]){
+            newSort.push_back(right[Rin]);
+            Rin++;
         }
-        else if((right.size() > 0 && left.size() > 0) && (left[0] < right[0] || left[0] == right[0])){
-            newSort.push_back(left[0]);
-            left.erase(left.begin());
+        else if((inLessThanEnd(Rin, right.size()) && inLessThanEnd(Lin, left.size())) && (left[Lin] < right[Rin] || left[Lin] == right[Rin])){
+            newSort.push_back(left[Lin]);
+            Lin++;
         }
-        else if(right.size() == 0 && left.size() > 0){
-            newSort.push_back(left[0]);
-            left.erase(left.begin());
+        else if(!inLessThanEnd(Rin, right.size()) && inLessThanEnd(Lin, left.size())){
+            newSort.push_back(left[Lin]);
+            Lin++;
         }
-        else if(left.size() == 0 && right.size() > 0){
-            newSort.push_back(right[0]);
-            right.erase(right.begin());
+        else if(inLessThanEnd(Rin, right.size()) && !inLessThanEnd(Lin, left.size())){
+            newSort.push_back(right[Rin]);
+            Rin++;
         }
     }
     values = newSort;
 }
+
+
+
 
 TEST(TestSort, noEl){
     vector<int> v = {};
