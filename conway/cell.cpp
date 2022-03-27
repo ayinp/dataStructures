@@ -2,12 +2,13 @@
 using namespace std;
 using namespace mssm;
 
-Cell::Cell()
+Cell::Cell(bool alive)
+    :alive{alive}
 {
 
 }
 
-void Cell::draw(Graphics& g, Vec2d location, bool alive)
+void Cell::draw(Graphics& g, Vec2d location)
 {
     if(alive){
         color = WHITE;

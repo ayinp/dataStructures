@@ -25,6 +25,7 @@ QMAKE_CXXFLAGS += -isystem $$PWD/soloud/
 
 SOURCES += \
         cell.cpp \
+        conway.cpp \
         glfw_src/context.c \
         glfw_src/init.c \
         glfw_src/input.c \
@@ -32,7 +33,6 @@ SOURCES += \
         glfw_src/vulkan.c \
         glfw_src/window.c \
         main.cpp \
-        maze.cpp \
         nanovg/nanovg.c \
         soloud/src/audiosource/wav/dr_impl.cpp \
         soloud/src/audiosource/wav/soloud_wav.cpp \
@@ -143,13 +143,13 @@ linux {
 
 HEADERS += \
     cell.h \
+    conway.h \
     include/GLFW/glfw3.h \
     include/GLFW/glfw3native.h \
     include/ghc/filesystem.hpp \
     include/graphics.h \
     include/vec2d.h \
     include/whereami.h \
-    maze.h \
     nanovg/fontstash.h \
     nanovg/nanovg.h \
     nanovg/nanovg_gl.h \

@@ -1,7 +1,7 @@
 #include <iostream>
 #include "graphics.h"
 #include "cell.h"
-#include "maze.h"
+#include "conway.h"
 
 using namespace std;
 using namespace mssm;
@@ -12,46 +12,23 @@ int main()
 {
     Graphics g("Test", 1024, 768);
 
-//    Cell all({1,1,1,1}, {100, 100});
-//    Cell noT({0,1,1,1}, {100, 200});
-//    Cell noB({1,1,1,0}, {100, 300});
-//    Cell noL({1,0,1,1}, {100, 400});
-//    Cell noR({1,1,0,1}, {100, 500});
-//    Cell ThruU({0,1,1,0}, {100, 600});
-//    Cell ThruR({1,0,0,1}, {200, 100});
-//    Cell cornerTL({1,1,0,0}, {200, 200});
-//    Cell cornerTR({1,0,1,0}, {200, 300});
-//    Cell cornerBL({0,1,0,1}, {200, 400});
-//    Cell cornerBR({0,0,1,1}, {200, 500});
-//    Cell none({0,0,0,0}, {200, 600});
-
-    Maze maze(20, 20);
-    maze.create(g);
+    Conway maze(30, 30);
+    maze.create([&g](double pct){return g.randomTrue(pct);}); // this is a lambda/anonomous function. He creates a closure
+    //which is a function along with some data -- makes a class. square braket things are feilds, body becomes the body of
+    //a method on the class and now has access to those data bits. Things in square brakets are captures bc we steal to use
+    //in our new function.
     while (g.draw()) {
         maze.draw(g);
-//        all.draw(g);
-//        noT.draw(g);
-//        noB.draw(g);
-//        noL.draw(g);
-//        noR.draw(g);
-//        ThruU.draw(g);
-//        ThruR.draw(g);
-//        cornerTL.draw(g);
-//        cornerTR.draw(g);
-//        cornerBL.draw(g);
-//        cornerBR.draw(g);
-//        none.draw(g);
-
+        maze.update();
 
 
 
 
         for (const Event& e : g.events()) {
+            cout<< e<< endl;
             switch (e.evtType) {
-            case EvtType::KeyPress:
-                if (e.arg == ' ') {
-
-                }
+            case EvtType::MousePress:
+                maze.messWithCell(g, {e.x, e.y});
                 break;
             default:
                 break;

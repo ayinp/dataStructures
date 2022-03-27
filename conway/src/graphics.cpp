@@ -512,13 +512,15 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     default:
         button = -1;
     }
-
+    double xPosition, yPosition;
+            glfwGetCursorPos(window, &xPosition, &yPosition);
+            yPosition = g->height()-yPosition;
     switch (action) {
     case GLFW_PRESS:
-        g->handleEvent(0,0,EvtType::MousePress, cvtMods(mods), button);
+        g->handleEvent(xPosition,yPosition,EvtType::MousePress, cvtMods(mods), button);
         break;
     case GLFW_RELEASE:
-        g->handleEvent(0,0,EvtType::MouseRelease, cvtMods(mods), button);
+        g->handleEvent(xPosition,yPosition,EvtType::MouseRelease, cvtMods(mods), button);
         break;
     }
 }

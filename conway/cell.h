@@ -7,12 +7,13 @@
 class Cell
 {
 public:
-    int width = 10;
-    int height = 10;
+    int width = 20;
+    int height = 20;
+    bool alive = false;
     mssm::Color color = mssm::BLACK;
 public:
-    Cell();
-    void draw(mssm::Graphics &g,  Vec2d location, bool alive);
+    Cell(bool alive);
+    void draw(mssm::Graphics &g,  Vec2d location);
 };
 
 
