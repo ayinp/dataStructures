@@ -5,9 +5,11 @@ using namespace mssm;
 using namespace std;
 
 Conway::Conway(int height, int width)
-    :height{height}, width{width}
+    :height{height}, width{width}, rule(512)
 {
-
+    for(int i = 0; i < rule.size(); i++){
+        rule[i] = rand()%2;
+    }
 }
 
 void Conway::draw(Graphics &g)
@@ -32,7 +34,7 @@ void Conway::create(function<bool(double)> randomTrue)
     cells.resize(height);
     for(int j = 0; j < height; j++){
         for(int i = 0; i < width; i++){
-            cells[j].push_back(Cell(randomTrue(0.5)));
+            cells[j].push_back(Cell(randomTrue(0.2)));
         }
     }
 }
@@ -72,7 +74,7 @@ void Conway::update()
     vector<vector<Cell>> newCells = cells;
     for(int j = 0; j < height; j++){
         for(int i = 0; i < width; i++){
-            newCells[j][i].alive = cellAlive(j, i);
+            newCells[j][i].alive = cellAlive2(j, i);
         }
     }
     cells = newCells;
@@ -92,24 +94,63 @@ bool Conway::cellAlive(int j, int i)
     return false;
 }
 
+bool Conway::cellAlive2(int j, int i)
+{
+    int number;
+    number = checkAlive(j,i) + 2*checkAlive(j-1,i) + 4*checkAlive(j+1,i) + 8*checkAlive(j,i-1) + 16*checkAlive(j,i+1)
+            + 32*checkAlive(j-1,i-1) + 64*checkAlive(j+1,i+1) + 128*checkAlive(j-1,i+1) + 256*checkAlive(j+1,i-1);
+    return rule[number];
+}
+
 void Conway::messWithCell(Graphics& g, Vec2d mouseLocation)
 {
-    Cell example(false);
-    int w = example.width;
-    int h = example.height;
+    int w = cells[0][0].width;
+    int h = cells[0][0].height;
 
     int xS = (g.width()-w*width)/2;
     int yS = (g.height()-h*height)/2;
 
     int j = (mouseLocation.y-yS)/h;
     int i = (mouseLocation.x-xS)/w;
-    cout << " ( " << j << ", " << i << " )" << endl;
 
     if(cells[j][i].alive){
         cells[j][i].alive = false;
     }
     else{
         cells[j][i].alive = true;
+    }
+}
+
+bool Conway::checkAlive(int j, int i)
+{
+    if(j < 0 || j >= height || i < 0 || i >= width){
+        return false;
+    }
+    return cells[j][i].alive;
+}
+
+void Conway::generateRule()
+{
+    for(int i = 0; i < rule.size(); i++){
+        rule[i] = rand()%2;
+    }
+}
+
+void Conway::clear()
+{
+    for(int j = 0; j < height; j++){
+        for(int i = 0; i < width; i++){
+            cells[j][i].alive = false;
+        }
+    }
+}
+
+void Conway::regenGuys()
+{
+    for(int j = 0; j < height; j++){
+        for(int i = 0; i < width; i++){
+            cells[j][i].alive = rand()%2;
+        }
     }
 }
 

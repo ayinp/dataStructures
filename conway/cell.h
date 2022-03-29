@@ -7,8 +7,8 @@
 class Cell
 {
 public:
-    int width = 20;
-    int height = 20;
+    int width = 15;
+    int height = 15;
     bool alive = false;
     mssm::Color color = mssm::BLACK;
 public:
