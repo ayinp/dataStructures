@@ -39,12 +39,73 @@ Color shiftColor(Color c)
 }
 
 
+bool pointInPolygon(Vec2d p, const vector<Vec2d>& pts){
+    double slope = 0;
+    int x = 0;
+    int numInts = 0;
+    if(pts.empty()){
+        return false;
+    }
+    for(int i = 0; i < pts.size(); i++){
+        if(p.x == pts[i].x && p.y == pts[i].y){
+            return false;
+        }
+    }
+    for(int i = 0; i < pts.size(); i++){
+        Vec2d p1 = pts[i];
+        Vec2d p2 = pts[(i+1)%pts.size()];
+        if((p.y >= p1.y && p.y < p2.y) || (p.y < p1.y && p.y >= p2.y)){
+            if((p1.x - p2.x) != 0){
+                slope = (p1.y-p2.y)/(p1.x-p2.x);
+                if(p1.y > p2.y){
+                    x = (p.y-p2.y)/slope;
+                    if(p2.x+x > p.x){
+                        numInts++;
+                    }
+                }
+                else if(p1.y < p2.y){
+                    x = (p.y-p1.y)/slope;
+                    if(p1.x+x > p.x){
+                        numInts++;
+                    }
+                }
+            }
+            else{
+                if(p1.x > p.x){
+                    numInts++;
+                }
+            }
+        }
+
+    }
+    if(numInts%2 == 1){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
 
 int main()
 {
     Graphics g("Image Tweaker", 1024, 768);
     vector<Vec2d> polygon;
     while (g.draw()) {
+
+        for(int i = 0; i < 10000; i++){
+            double x = g.randomInt(0, g.width());
+            double y = g.randomInt(0, g.height());
+            if(pointInPolygon({x,y}, polygon)){
+                g.ellipse({x,y}, 3, 3, GREEN, GREEN);
+            }
+            else{
+                g.ellipse({x,y}, 3, 3, RED, RED);
+            }
+        }
+
+
+
 
 
         g.polygon(polygon, WHITE);
