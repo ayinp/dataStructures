@@ -97,10 +97,10 @@ int main()
             double x = g.randomInt(0, g.width());
             double y = g.randomInt(0, g.height());
             if(pointInPolygon({x,y}, polygon)){
-                g.ellipse({x,y}, 3, 3, GREEN, GREEN);
+                g.ellipse({x,y}, 1, 1, GREEN, GREEN);
             }
             else{
-                g.ellipse({x,y}, 3, 3, RED, RED);
+                g.ellipse({x,y}, 1, 1, RED, RED);
             }
         }
 
