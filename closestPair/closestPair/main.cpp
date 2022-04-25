@@ -52,6 +52,10 @@ PointPair closestPairBad(const vector<Vec2d>& points, Graphics& g){
     return shortest;
 }
 
+bool inLessThanEnd(int in, int size){
+    return (size-in) > 0;
+}
+
 PointPair recurseClosestPair(vector<Vec2d>& points){
     if(points.size() == 3){
         PointPair one(points[0], points[1]);
@@ -88,8 +92,44 @@ PointPair recurseClosestPair(vector<Vec2d>& points){
     }
     PointPair lShort = recurseClosestPair(pL);
     PointPair rShort = recurseClosestPair(pM);
+
+    vector<Vec2d> newSort = {};
+    int Lin = 0;
+    int Rin = 0;
+    while(inLessThanEnd(Rin, pM.size()) || inLessThanEnd(Lin, pL.size())){
+
+        if((inLessThanEnd(Rin, pM.size()) && inLessThanEnd(Lin, pL.size())) && pL[Lin].y > pM[Rin].y){
+            newSort.push_back(pM[Rin]);
+            Rin++;
+        }
+        else if((inLessThanEnd(Rin, pM.size()) && inLessThanEnd(Lin, pL.size())) && (pL[Lin].y < pM[Rin].y || pL[Lin].y == pM[Rin].y)){
+            newSort.push_back(pL[Lin]);
+            Lin++;
+        }
+        else if(!inLessThanEnd(Rin, pM.size()) && inLessThanEnd(Lin, pL.size())){
+            newSort.push_back(pL[Lin]);
+            Lin++;
+        }
+        else if(inLessThanEnd(Rin, pM.size()) && !inLessThanEnd(Lin, pL.size())){
+            newSort.push_back(pM[Rin]);
+            Rin++;
+        }
+    }
+    if (points.size() != newSort.size()) {
+        cout << "BAAAAADdaDadadd" << endl;
+    }
+
+    points = newSort;
+
+
+    for(int i = 1; i < points.size(); i++){
+        if(!(points[i].y > points[i-1].y)){
+            cout << "NOOOOOOOOOOOOOOOOOOOOOO" << endl;
+        }
+    }
+
     PointPair currentShortest({0,0}, {0,0});
-    double splitPoint = (pM[0].x + pL[pL.size()].x)/2;
+    double splitPoint = (pM[0].x + pL[pL.size()-1].x)/2;
     double dMore;
     double dLess;
     if(rShort.distance < lShort.distance){
@@ -104,7 +144,7 @@ PointPair recurseClosestPair(vector<Vec2d>& points){
     }
     vector<Vec2d> strip;
     for(int i = 0; i < points.size(); i++){
-        if(points[i].x < dMore && points[i].x > dLess){
+        if(points[i].x <= dMore && points[i].x >= dLess){
             strip.push_back(points[i]);
         }
     }
@@ -118,7 +158,7 @@ PointPair recurseClosestPair(vector<Vec2d>& points){
             current.p1 = strip[i];
             current.p2 = strip[j];
             current.calculateDistance();
-            if(abs(current.p1.y - current.p2.y) > dMore-dLess){
+            if(abs(current.p1.y - current.p2.y) > currentShortest.distance){
                 break;
             }
             if(current.distance < currentShortest.distance){
@@ -143,7 +183,7 @@ PointPair closestPair(vector<Vec2d> points){
 int main()
 {
     Graphics g("MyProgram", 1024, 768);
-    int numDotsX = 50;
+    int numDotsX = 10;
     int numDotsY = numDotsX*g.height()/g.width();
     double nS = g.width()/numDotsX;
     double offset = nS/2;
@@ -185,7 +225,9 @@ int main()
             break;
         }
 
-
+        if(bad.distance < good.distance){
+            cout << "cry" << endl;
+        }
 
         //make button to regenerate random points
 
