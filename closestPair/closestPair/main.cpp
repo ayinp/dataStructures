@@ -57,6 +57,9 @@ PointPair recurseClosestPair(vector<Vec2d>& points){
         PointPair one(points[0], points[1]);
         PointPair two(points[1], points[2]);
         PointPair three(points[2], points[0]);
+
+        sort(points.begin(), points.end(), [](Vec2d a, Vec2d b){return a.y < b.y;});
+
         if(one.distance <= two.distance && one.distance < three.distance){
             return one;
         }
@@ -64,9 +67,13 @@ PointPair recurseClosestPair(vector<Vec2d>& points){
             return two;
         }
         return three;
-        //this is going to encounter issues if the distances are equal but i dont feel like fixing that rn
     }
     if(points.size() == 2){
+
+        if(points[0].y > points[1].y){
+            swap(points[0], points[1]);
+        }
+
         return PointPair(points[0], points[1]);
     }
     vector<Vec2d> pM;
@@ -81,11 +88,50 @@ PointPair recurseClosestPair(vector<Vec2d>& points){
     }
     PointPair lShort = recurseClosestPair(pL);
     PointPair rShort = recurseClosestPair(pM);
-
+    PointPair currentShortest({0,0}, {0,0});
+    double splitPoint = (pM[0].x + pL[pL.size()].x)/2;
+    double dMore;
+    double dLess;
     if(rShort.distance < lShort.distance){
-        return rShort;
+        dMore = splitPoint + rShort.distance;
+        dLess = splitPoint - rShort.distance;
+        currentShortest = rShort;
     }
-    return lShort;
+    else{
+        dMore = splitPoint + lShort.distance;
+        dLess = splitPoint - lShort.distance;
+        currentShortest = lShort;
+    }
+    vector<Vec2d> strip;
+    for(int i = 0; i < points.size(); i++){
+        if(points[i].x < dMore && points[i].x > dLess){
+            strip.push_back(points[i]);
+        }
+    }
+    if(strip.size() == 0){
+        return currentShortest;
+    }
+
+    PointPair current({0,0}, {0,0});
+    for(int i = 0; i < strip.size(); i++){
+        for(int j = i+1; j < strip.size(); j++){
+            current.p1 = strip[i];
+            current.p2 = strip[j];
+            current.calculateDistance();
+            if(abs(current.p1.y - current.p2.y) > dMore-dLess){
+                break;
+            }
+            if(current.distance < currentShortest.distance){
+                currentShortest = current;
+            }
+        }
+    }
+
+
+
+
+    return currentShortest;
+
 }
 
 PointPair closestPair(vector<Vec2d> points){
@@ -118,30 +164,45 @@ int main()
     //        points.push_back(point);
     //    }
 
+    PointPair bad = closestPairBad(points,g);
+    PointPair good = closestPair(points);
 
     while (g.draw()) {
 
         g.points(points, WHITE);
 
-        Vec2d p1 = closestPairBad(points, g).p1;
-        Vec2d p2 = closestPairBad(points, g).p2;
-        Vec2d p3 = closestPair(points).p1;
-        Vec2d p4 = closestPair(points).p2;
 
-        g.ellipse(p1, 10, 10, RED, RED);
-        g.ellipse(p2, 10, 10, RED, RED);
-        g.ellipse(p3, 3, 3, GREEN, GREEN);
-        g.ellipse(p4, 3, 3, GREEN, GREEN);
+        g.ellipse(bad.p1, 10, 10, RED, RED);
+        g.ellipse(bad.p2, 10, 10, RED, RED);
+        g.ellipse(good.p1, 3, 3, GREEN, GREEN);
+        g.ellipse(good.p2, 3, 3, GREEN, GREEN);
+        g.line(good.p1, good.p2, GREEN);
+
+        g.text({25, 25}, 25, to_string(good.distance), GREEN);
+        g.text({25, 50}, 25, to_string(bad.distance), RED);
 
         if (g.isKeyPressed(Key::ESC)) {
             break;
         }
+
+
 
         //make button to regenerate random points
 
         for (const Event& e : g.events()) {
             switch (e.evtType) {
             case EvtType::KeyPress:
+                if (e.arg == 'R') {
+                    points.clear();
+                    for(int i = 0; i < numDotsX; i++){
+                        for (int j = 0; j < numDotsY; j++){
+                            Vec2d point = {(nS*i + g.randomDouble(0, offset) + cOX),(nS*j + g.randomDouble(0, offset) + cOY)};
+                            points.push_back(point);
+                        }
+                    }
+                    bad = closestPairBad(points,g);
+                    good = closestPair(points);
+                }
                 break;
             case EvtType::KeyRelease:
                 break;
