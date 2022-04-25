@@ -183,7 +183,7 @@ PointPair closestPair(vector<Vec2d> points){
 int main()
 {
     Graphics g("MyProgram", 1024, 768);
-    int numDotsX = 10;
+    int numDotsX = 5;
     int numDotsY = numDotsX*g.height()/g.width();
     double nS = g.width()/numDotsX;
     double offset = nS/2;
@@ -207,6 +207,8 @@ int main()
     PointPair bad = closestPairBad(points,g);
     PointPair good = closestPair(points);
 
+    bool gotBad = false;
+
     while (g.draw()) {
 
         g.points(points, WHITE);
@@ -226,7 +228,8 @@ int main()
         }
 
         if(bad.distance < good.distance){
-            cout << "cry" << endl;
+           // cout << "cry" << endl;
+            gotBad = true;
         }
 
         //make button to regenerate random points
@@ -234,7 +237,7 @@ int main()
         for (const Event& e : g.events()) {
             switch (e.evtType) {
             case EvtType::KeyPress:
-                if (e.arg == 'R') {
+                if (e.arg == 'R' && !gotBad) {
                     points.clear();
                     for(int i = 0; i < numDotsX; i++){
                         for (int j = 0; j < numDotsY; j++){
@@ -243,6 +246,9 @@ int main()
                         }
                     }
                     bad = closestPairBad(points,g);
+                    good = closestPair(points);
+                }
+                if (e.arg == 'T') {
                     good = closestPair(points);
                 }
                 break;
