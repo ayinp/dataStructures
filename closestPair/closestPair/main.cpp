@@ -52,7 +52,7 @@ PointPair closestPairBad(const vector<Vec2d>& points, Graphics& g){
     return shortest;
 }
 
-bool inLessThanEnd(int in, int size){
+inline bool inLessThanEnd(int in, int size){
     return (size-in) > 0;
 }
 
@@ -90,8 +90,10 @@ PointPair recurseClosestPair(vector<Vec2d>& points){
             pM.push_back(points[i]);
         }
     }
+    double splitPoint = (pM[0].x + pL[pL.size()-1].x)/2;
     PointPair lShort = recurseClosestPair(pL);
     PointPair rShort = recurseClosestPair(pM);
+
 
     vector<Vec2d> newSort = {};
     int Lin = 0;
@@ -129,7 +131,7 @@ PointPair recurseClosestPair(vector<Vec2d>& points){
     }
 
     PointPair currentShortest({0,0}, {0,0});
-    double splitPoint = (pM[0].x + pL[pL.size()-1].x)/2;
+
     double dMore;
     double dLess;
     if(rShort.distance < lShort.distance){
@@ -183,7 +185,10 @@ PointPair closestPair(vector<Vec2d> points){
 int main()
 {
     Graphics g("MyProgram", 1024, 768);
-    int numDotsX = 5;
+    int counter = 0;
+    int badCounter = 0;
+    bool go = false;
+    int numDotsX = 25;
     int numDotsY = numDotsX*g.height()/g.width();
     double nS = g.width()/numDotsX;
     double offset = nS/2;
@@ -222,14 +227,32 @@ int main()
 
         g.text({25, 25}, 25, to_string(good.distance), GREEN);
         g.text({25, 50}, 25, to_string(bad.distance), RED);
+        g.text({g.width()-50, 25}, 25, to_string(counter), YELLOW);
+        g.text({g.width()-50, 50}, 25, to_string(badCounter), BLUE);
 
         if (g.isKeyPressed(Key::ESC)) {
             break;
         }
 
-        if(bad.distance < good.distance){
-           // cout << "cry" << endl;
-            gotBad = true;
+        //        if(bad.p1.x != good.p1.x && bad.p1.y != good.p1.y && bad.p2.x != good.p2.x && bad.p2.y != good.p2.y ){
+        //           // cout << "cry" << endl;
+        //            gotBad = true;
+        //        }
+
+        if(go  && !(bad.distance != good.distance)){
+            points.clear();
+            for(int i = 0; i < numDotsX; i++){
+                for (int j = 0; j < numDotsY; j++){
+                    Vec2d point = {(nS*i + g.randomDouble(0, offset) + cOX),(nS*j + g.randomDouble(0, offset) + cOY)};
+                    points.push_back(point);
+                }
+            }
+            bad = closestPairBad(points,g);
+            good = closestPair(points);
+            counter++;
+            if(bad.distance != good.distance){
+                badCounter++;
+            }
         }
 
         //make button to regenerate random points
@@ -237,16 +260,13 @@ int main()
         for (const Event& e : g.events()) {
             switch (e.evtType) {
             case EvtType::KeyPress:
-                if (e.arg == 'R' && !gotBad) {
-                    points.clear();
-                    for(int i = 0; i < numDotsX; i++){
-                        for (int j = 0; j < numDotsY; j++){
-                            Vec2d point = {(nS*i + g.randomDouble(0, offset) + cOX),(nS*j + g.randomDouble(0, offset) + cOY)};
-                            points.push_back(point);
-                        }
+                if (e.arg == 'R') {
+                    if(!go){
+                        go = true;
                     }
-                    bad = closestPairBad(points,g);
-                    good = closestPair(points);
+                    else{
+                        go = false;
+                    }
                 }
                 if (e.arg == 'T') {
                     good = closestPair(points);
