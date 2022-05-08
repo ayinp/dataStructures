@@ -22,16 +22,19 @@ using namespace mssm;
 
 
 //pi/180 rad = degree
-vector<Vec2d/*vector<int>*/> Hough(const vector<Vec2d>& points, double maxR, int numR, int numTheta){
-    vector<Vec2d> rTheta;
+vector<vector<int>> Hough(const vector<Vec2d>& points, double maxR, int numR, int numTheta){
+    vector<vector<int>> counts(numR, vector<int>(numTheta));
+
     double r = 0;
     for(int i = 0; i < points.size(); i++){
-        for(int theta = 0; theta < 2*M_PI; theta += 2*M_PI/numTheta){
+        for(double theta = 0; theta < 2*M_PI; theta += 2*M_PI/numTheta){
             r = points[i].x*cos(theta) + points[i].y*sin(theta);
-            rTheta.push_back({r, theta});
+            if(r >= 0){
+            counts[r/(maxR/numR)][theta/((2*M_PI)/numTheta)]++;
+            }
         }
     }
-    return rTheta;
+    return counts;
 }
 
 
@@ -50,13 +53,19 @@ int main()
     double lowestY = 0;
     double bigestX = 0;
     double bigestY = 0;
+
     while (getline(pointsFile, line)){
         stringstream ss(line);
         ss >> x;
         ss.ignore(1); // ignore the comma
         ss >> y;
-        cout << line << endl;
-        cout << "{" << x << ", " << y << "}" << endl;
+
+//    for (double x = 0; x < 1000; x++) {
+//        double y = x*0.7;
+
+
+//        cout << line << endl;
+//        cout << "{" << x  << ", " << y << "}" << endl;
         points.push_back({x, y});
         if(x > bigestX){
             bigestX = x;
@@ -86,12 +95,55 @@ int main()
         points[i] = scale*points[i];
     }
 
-    vector<Vec2d> hough = Hough(points, 0, 0, 20);
+
+    int numTheta = 100;
+    int numR = 100;
+    double diag = sqrt((g.width()*g.width()) + (g.height()*g.height()));
+    double highestR = diag;
+
+    vector<vector<int>> houghInt = Hough(points, highestR, numR, numTheta);
+    vector<Vec2d> hough;
+
+    double highest = 0;
+    int inI = 0;
+    int inJ = 0;
+    for(int i = 0; i < houghInt.size(); i++){
+        for(int j = 0; j < houghInt[i].size(); j++){
+            if(houghInt[i][j] > highest){
+                inI = i;
+                inJ = j;
+                highest = houghInt[i][j];
+            }
+        }
+    }
+
+    double rad = inI * (highestR/numR);
+    double theta = inJ * ((2*M_PI)/numTheta);
+
+    Vec2d p = {rad, 0};
+    p.rotate(theta);
+
+    Vec2d q = p.rotated(M_PI/2);
+
+    Vec2d p1 = p + q;
+    Vec2d p2 = p - q;
+
 
     while (g.draw()) {
 
         g.points(points, RED);
-        g.points(hough, GREEN);
+//        g.points(hough, GREEN);
+
+        g.line(p1, p2, YELLOW);
+
+        for(int i = 0; i < houghInt.size(); i++){
+            for(int j = 0; j < houghInt[i].size(); j++){
+    //            if(houghInt[i][j] > 0){
+    //                hough.push_back({j * 10, i * 10});
+    //            }
+                g.ellipse({j * 10, i * 10}, 0.02*houghInt[i][j], 0.02*houghInt[i][j], GREEN);
+            }
+        }
 
 
         if (g.isKeyPressed(Key::ESC)) {
