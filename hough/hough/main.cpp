@@ -20,8 +20,18 @@ using namespace mssm;
 //
 // return: 2d array of "votes"
 
-vector<vector<int>> Hough(const vector<Vec2d>& points, double maxR, int numR, int numTheta){
 
+//pi/180 rad = degree
+vector<Vec2d/*vector<int>*/> Hough(const vector<Vec2d>& points, double maxR, int numR, int numTheta){
+    vector<Vec2d> rTheta;
+    double r = 0;
+    for(int i = 0; i < points.size(); i++){
+        for(int theta = 0; theta < 2*M_PI; theta += 2*M_PI/numTheta){
+            r = points[i].x*cos(theta) + points[i].y*sin(theta);
+            rTheta.push_back({r, theta});
+        }
+    }
+    return rTheta;
 }
 
 
@@ -62,6 +72,8 @@ int main()
         }
     }
 
+
+
     double xRange = bigestX - lowestX;
     double yRange = bigestY - lowestY;
     double scaleX = g.width()/xRange;
@@ -74,9 +86,12 @@ int main()
         points[i] = scale*points[i];
     }
 
+    vector<Vec2d> hough = Hough(points, 0, 0, 20);
+
     while (g.draw()) {
 
         g.points(points, RED);
+        g.points(hough, GREEN);
 
 
         if (g.isKeyPressed(Key::ESC)) {
