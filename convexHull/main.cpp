@@ -28,31 +28,21 @@ using namespace mssm;
 
 double calculateAngle(Vec2d a, Vec2d b, Vec2d c){
 
-    Vec2d ab = {b.x-a.x, b.y-a.y};
-    Vec2d cb = {b.x-c.x, b.y-c.y};
+    Vec2d ab = a - b;
+    Vec2d cb = c - b;
+
     double dot = ab.x * cb.x + ab.y * cb.y;
-    double abSqr = ab.x * ab.x + ab.y * ab.y;
-    double cbSqr = cb.x * cb.x + cb.y * cb.y;
-    double cosSqr = dot * dot / abSqr / cbSqr;
-    double cos2 = 2 * cosSqr - 1;
-    double alpha2 =
-            (cos2 <= -1) ? M_PI :
-                           (cos2 >= 1) ? 0 :
-                                         acosf(cos2);
 
-    double rslt = alpha2 / 2;
+    double abM = ab.magnitude();
+    double cbM = cb.magnitude();
 
-    double rs = rslt * 180. / M_PI;
+    double cos = dot / (abM * cbM);
 
-    if (dot < 0){
-        rs = 180 - rs;
-    }
-    double det = (ab.x * cb.y - ab.y * cb.y);
-    if (det < 0){
-        rs = -rs;
-    }
+    double angle = acos(cos);
 
-    return rs*(M_PI/180);
+
+
+    return angle/(M_PI/180);
 }
 
 vector<Vec2d> giftWrapping(vector<Vec2d> points){
@@ -72,22 +62,22 @@ vector<Vec2d> giftWrapping(vector<Vec2d> points){
     }
     hull.push_back(topPoint);
 
-    Vec2d p1 = {topPoint.x + 100, topPoint.y};
-    Vec2d p2 = topPoint;
-    double smallestAngle = 2*M_PI;
+    Vec2d prev = {topPoint.x + 100, topPoint.y};
+    Vec2d curr = topPoint;
+    double smallestAngle = 0;
     int smallestIndex = origionalIndex + 1;
 
 
     //find smallest angle;
 
     while(smallestIndex != origionalIndex){
-//        cout << smallestIndex << endl;
-//        cout << origionalIndex << endl;
-        smallestAngle = 2*M_PI;
+        //        cout << smallestIndex << endl;
+        //        cout << origionalIndex << endl;
+        smallestAngle = 0;
         for(int i = 0; i < points.size(); i++){
             if(i != index){
-                double a = calculateAngle(p1, p2, points[i]);
-                if(a < smallestAngle){
+                double a = calculateAngle(prev, curr, points[i]);
+                if(a > smallestAngle){
                     cout << a << " < " << smallestAngle << endl;
                     smallestAngle = a;
                     smallestIndex = i;
@@ -95,8 +85,11 @@ vector<Vec2d> giftWrapping(vector<Vec2d> points){
                 }
             }
         }
+        prev = curr;
+        curr = points[smallestIndex];
         index = smallestIndex;
-        hull.push_back(points[smallestIndex]);
+        hull.push_back(curr);
+        cout << smallestIndex << endl;
         if(hull.size() > points.size()){
             cout << "OH NO!!!" << endl;
             break;
@@ -120,13 +113,26 @@ int main()
 
     vector<Vec2d> hull = giftWrapping(points);
 
+
+    points.push_back(g.mousePos());
+
     while (g.draw()) {
 
-        g.points(points, WHITE);
 
-        for(int i = 0; i < hull.size(); i++){
-            g.ellipse(hull[i], 5, 5, RED, RED);
-        }
+        points.back() = g.mousePos();
+
+        hull = giftWrapping(points);
+
+                g.points(points, WHITE);
+
+                g.polygon(hull, WHITE);
+                for(int i = 0; i < hull.size(); i++){
+                    g.ellipse(hull[i], 5, 5, RED, RED);
+                    //g.text(hull[i]+Vec2d{10,10}, 20, to_string(i), WHITE);
+                    if (i > 0 && i < (hull.size()-1)) {
+                        g.text(hull[i]+Vec2d{10,10}, 20, to_string(calculateAngle(hull[i-1], hull[i], hull[i+1])));
+                    }
+                }
 
 
         if (g.isKeyPressed(Key::ESC)) {
@@ -136,6 +142,14 @@ int main()
         for (const Event& e : g.events()) {
             switch (e.evtType) {
             case EvtType::KeyPress:
+            {
+                points.clear();
+                for(int i = 0; i < 10; i++){
+                    points.push_back({g.randomDouble(0, g.width()), g.randomDouble(0, g.height())});
+                }
+
+                hull = giftWrapping(points);
+            }
                 break;
             case EvtType::KeyRelease:
                 break;
